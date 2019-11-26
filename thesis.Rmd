@@ -1,0 +1,109 @@
+---
+title: "thesis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(devtools)
+library(readxl)
+library(janitor)
+library(tidyverse)
+```
+
+```{r data}
+
+
+long <- wide %>% gather(year, value, -c(country))
+
+cleaned <- long %>%
+  drop_na() %>%
+  mutate(cic = value * 1000000) %>%
+  select(-value)
+  
+```
+
+```{r merging}
+
+long_2 <- new %>% gather(year, value, -c(country))
+
+cleaned <- long_2 %>%
+  drop_na() %>%
+  mutate(cic = value * 1000000) %>%
+  select(-value) %>%
+  mutate(year = as.numeric(year))
+
+original <- read_excel("original_data.xlsx")
+
+joined <- cleaned %>%
+  full_join(original, by = c("country", "year", "cic")) 
+
+gdp <- read_excel("gdp.xls")
+
+cleaned_gdp <- gdp %>%
+  select(-`WEO Country Code`, -`ISO`, -`WEO Subject Code`) %>%
+  filter(`Subject Descriptor` == "Gross domestic product, current prices") %>%
+  filter(`Units` == "National currency") %>%
+  select(-`Subject Descriptor`, -`Subject Notes`, -`Units`, -`Country/Series-specific Notes`, -`Scale`) %>%
+gather(Year, Value, -c(Country)) %>%
+rename(country = Country) %>%
+rename(year = Year) %>%
+rename(value = Value) %>%
+  filter(!value %in% c("n/a", "--")) %>%
+  mutate(value = as.numeric(value)) %>%
+  mutate(gdp = value * 1000000000) %>%
+  select(-value)
+
+interest_rates_imf <- read_xlsx("Interest_Rates.xlsx", skip = 6) %>%
+select(-`Scale`, -`Base Year`) %>%
+gather(Year, Value, -c(Country)) %>%
+filter(Value != "...") %>%
+rename(interest_rates_imf = Value)
+
+interest_rates_bis <- read_xlsx("interest_rates_bis.xlsx") %>%
+rename(date = `...1`) %>%
+pivot_longer(-date, names_to = "country", values_to = "interest_rate") %>%
+mutate(year = str_sub(date, 1,4)) %>%
+group_by(country, year) %>%
+summarize(avg = mean(interest_rate, na.rm = TRUE)) %>%
+filter(avg != "NaN")
+
+eci <- read_csv("eci_country_rankings.csv")  %>%
+clean_names() %>%
+select(-country_id) %>%
+mutate(year = as.numeric(year))
+
+gini_coeffient <- read_excel("gini_coefficent_2.xlsx") %>%
+  pivot_longer(-Year, names_to = "country", values_to = "gini")
+
+uncertainty <- read_excel("uncertainty.xlsx") %>%
+mutate(quarter = str_sub(year, -2)) %>%
+mutate(year = str_sub(year, 1,4))
+
+gdp_weo <- read_csv("gdp_weo.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp = value)
+
+tax_gdp <- read_csv("tax_gdp.csv", skip = 3) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+rename(country = `Country Name`)
+
+imf_data <- cleaned %>%
+full_join(gdp_weo, by = c("year", "country")) %>%
+mutate(cd = cic/gdp) %>%
+drop_na()
+
+graph <- imf_data %>%
+group_by(country) %>%
+count() %>%
+filter(n == 18)
+
+```
+
