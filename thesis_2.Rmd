@@ -84,7 +84,7 @@ mutate(year = as.numeric(year)) %>%
 group_by(country) %>%
 count()
 
-eci <- read_csv("eci_country_rankings.csv")  %>%
+eci <- read_csv("raw-data/eci_country_rankings.csv")  %>%
 clean_names() %>%
 select(-country_id) %>%
 mutate(year = as.numeric(year))
@@ -176,6 +176,10 @@ mutate(cd = cic/gdp) %>%
 mutate(log_cd = log(cd)) %>%
 mutate(log_cic = log(cic)) %>%
 drop_na() %>%
+filter(log_cd != "-Inf") %>%
+arrange(desc(cd))
+
+  
 filter(!country %in% c("Liberia", "Jordan", "Hong Kong", "South Sudan", "Mauritania", "Syrian Arab Republic", "Bahamas", "Zimbabwe"))
 
 grouped <- cash %>%
@@ -253,7 +257,7 @@ world_cd <- cash %>%
   summarize(avg = mean(cd)) %>%
   filter(!year %in% c("1997", "1998", "1999", "2000"))
 
-aggregate_cd <- ggplot(world_cd, aes(x=year, y=avg)) + geom_point() + geom_line() + labs(title = "Change in Aggregate World Currency Demand 2001-2018", subtitle = "Significant Positive Trend", x= "Year", y = "Average Currency Demand", caption = "Source: IMF - International Financial Statistics; BoE; SNB; RBI; BCRA; MAS") 
+aggregate_cd <- ggplot(world_cd, aes(x=year, y=avg)) + geom_point() + geom_line(size = 1.25) + labs(title = "Change in Aggregate World Currency Demand 2001-2018", subtitle = "Significant Positive Trend", x= "Year", y = "Average Currency Demand", caption = "Source: IMF - International Financial Statistics; BoE; SNB; RBI; BCRA; MAS") 
 print(aggregate_cd)
 
 world_2014 <- cash %>%
@@ -482,7 +486,79 @@ cash_7a <- cash_5a %>%
 economic_freedom <- read_csv("raw-data/data.csv") %>%
   clean_names() %>%
   rename(country = name) %>%
-  rename(year = index_year)
+  rename(year = index_year) %>%
+  select(-fiscal_health, -labor_freedom) %>%
+  mutate(overall_score = as.numeric(overall_score)) %>%
+  mutate(business_freedom = as.numeric(business_freedom)) %>%
+  mutate(monetary_freedom = as.numeric(monetary_freedom)) %>%
+  mutate(financial_freedom = as.numeric(financial_freedom)) %>%
+  mutate(investment_freedom = as.numeric(investment_freedom)) %>%
+  mutate(trade_freedom = as.numeric(trade_freedom)) %>%
+  mutate(government_integrity = as.numeric(government_integrity)) %>%
+  mutate(judicial_effectiveness = as.numeric(judicial_effectiveness)) %>%
+  mutate(tax_burden = as.numeric(tax_burden)) %>%
+  mutate(government_spending = as.numeric(government_spending)) %>%
+  mutate(property_rights = as.numeric(property_rights))
+
+shadow_economy <- read_xlsx("raw-data/shadow_economy.xlsx") %>%
+select(-`No.`, -`Av. over years`) %>%
+gather(year, value, -c(`Country`)) %>%
+rename(country = `Country`) %>%
+rename(shadow_economy = value) %>%
+mutate(shadow_economy = as.numeric(shadow_economy)) %>%
+arrange(country, year) %>%
+mutate(year = as.numeric(year)) 
+
+urbanization <- read_csv("raw-data/urbanization.csv", skip = 3) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(urbanization = value) 
+
+merged <- cash %>%
+  full_join(interest_rates_imf, by = c("country", "year")) %>%
+  full_join(interest_rates_wdi, by = c("country", "country_code", "year")) %>%
+  full_join(tax_gdp, by = c("country", "country_code", "year")) %>%
+  full_join(eci, by = c("country", "year")) %>%
+  full_join(uncertainty, by = c("country_code", "year")) %>%
+  full_join(economic_freedom, by = c("country", "year")) %>%
+  full_join(shadow_economy, by = c("country", "year")) %>%
+  full_join(urbanization, by = c("country", "country_code", "year")) %>%
+  full_join(crime, by = c("country", "country_code", "year")) %>%
+  mutate(region = ifelse(country %in% c("Australia", "Brunei Darussalam", "Cambodia", "Fiji", "Hong Kong", "Indonesia", "Japan", "Korea, Rep.", "Macao", "Malaysia", "Mongolia", "Myanmar", "Thailand", "Papua New Guinea", "Philippines", "Samoa", "Singapore", "Solomon Islands", "Tonga", "Vanuatu", "New Zealand"), "East Asia and Pacific",
+          ifelse(country %in% c("Albania", "Armenia", "Azerbaijan", "Belarus", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Georgia", "Hungary", "Iceland", "Kazakhstan", "Kyrgyz Republic", "Moldova", "North Macedonia", "Norway", "Poland", "Romania", "Serbia", "Sweden", "Switzerland", "Tajikistan", "Turkey", "Ukraine", "United Kingdom"), "Europe and Central Asia", 
+           ifelse(country %in% c("Antigua and Barbuda", "Argentina", "Bahamas", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Grenada", "Guatemala", "Guyana", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama", "Paraguay", "Peru", "St. Kitts and Nevis", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Trinidad and Tobago", "Uruguay", "Venezuela, RB"), "Latin America and The Caribbean",
+            ifelse(country %in% c("Algeria", "Djibouti", "Egypt", "Iraq", "Israel", "Jordan", "Kuwait", "Morocco", "Oman", "Qatar", "Syrian Arab Republic", "Tunisia", "United Arab Emirates"), "Middle East and North Africa", 
+             ifelse(country %in% c("Canada", "United States"), "North America",
+              ifelse(country %in% c("Afghanistan", "Bangladesh", "Bhutan", "India", "Maldives", "Nepal", "Pakistan", "Sri Lanka"), "South Asia",
+               ifelse(country %in% c("Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo DR", "Congo, Rep.", "Cote d'Ivoire", "Equatorial Guinea", "Eritrea", "Eswatini", "Gabon", "Ghana", "Guinea-Bissau", "Kenya", "Lesotho", "Liberia", "Madagascar", "Mali", "Mauritania", "Mauritius", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Uganda", "Zambia", "Zimbabwe"), "Sub-Saharan Africa", "NA")))))))) %>%
+   mutate(development = ifelse(country %in% c("Afghanistan", "Benin", "Burkina Faso", "Burundi", "Central African Republic", "Chad", "Congo DR", "Eritrea", "Guinea-Bissau", "Haiti", "Liberia", "Madagascar", "Mali", "Mozambique", "Nepal", "Niger", "Rwanda", "Sierra Leone", "South Sudan", "Syrian Arab Republic", "Tajikistan", "Tanzania", "Togo", "Uganda"), "Low-Income Economies",
+                        ifelse(country %in% c("Angola", "Bangladesh", "Bhutan", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Comoros", "Congo, Rep.", "Cote d'Ivoire", "Djibouti", "Egypt", "Eswatini", "Ghana", "Honduras", "India", "Indonesia", "Kenya", "Kyrgyz Republic", "Lesotho", "Mauritania", "Moldova", "Mongolia", "Morocco", "Myanmar", "Nicaragua", "Nigeria", "Pakistan", "Papua New Guinea", "Philippines", "Sao Tome and Principe", "Senegal", "Solomon Islands", "Sudan", "Tunisia", "Ukraine", "Vanuatu", "Zambia", "Zimbabwe"), "Lower-Middle-Income Economies", 
+                        ifelse(country %in% c("Albania", "Algeria", "Argentina", "Armenia", "Azerbaijan", "Belarus", "Belize", "Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Equatorial Guinea", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Malaysia", "Maldives", "Mauritius", "Mexico", "Namibia", "North Macedonia", "Paraguay", "Peru", "Romania", "Samoa", "Serbia", "Sri Lanka", "South Africa", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Thailand", "Tonga", "Turkey", "Venezuela, RB"), "Upper-Middle-Income Economies",
+                        ifelse(country %in% c("Antigua and Barbuda", "Australia", "Bahamas", "Barbados", "Brunei Darussalam", "Canada", "Chile", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Hong Kong", "Hungary", "Iceland", "Israel", "Japan", "Korea, Rep.", "Kuwait", "Macao", "New Zealand", "Norway", "Oman", "Panama", "Poland", "Qatar", "Seychelles", "Singapore", "St. Kitts and Nevis", "Sweden", "Switzerland", "Trinidad and Tobago", "United Arab Emirates", "United Kingdom", "United States", "Uruguay"), "High-Income Economies", "NA"))))) %>%
+  mutate(cd_percent = cd *100) %>%
+  mutate(tax_gdp_percent = tax_gdp* 100)
+  
+merged <- merged %>%
+  arrange(country, year) %>%
+  filter(!is.na(cic)) 
+
+analysis <- merged %>%
+  arrange(desc(cd))
+  
+write.csv(merged, "merged.csv")
+
+crime <- read_csv("raw-data/intentional_homocide.csv", skip = 3) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(crime = value) 
 
 cash_8 <- cash_5 %>%
   full_join(economic_freedom, by = c( "country", "year")) %>%
@@ -681,5 +757,35 @@ a_2007 <- africa %>%
   summarize(cd = cd)
 
 difference <- a_2007 - a_2006
+
+
+merged <- cash %>%
+  full_join()
+
+
+tax_gdp_plot <- merged %>%
+  group_by(year, region) %>%
+  summarize(tax_gdp = mean(tax_gdp, na.rm = TRUE))
+
+ggplot(tax_gdp_plot, aes(x = year, y = tax_gdp, color = region)) + geom_point() + geom_line()
+
+tax_gdp_plot_total <- merged %>%
+  group_by(year) %>%
+  summarize(tax_gdp = median(tax_gdp, na.rm = TRUE))
+
+ggplot(tax_gdp_plot_total, aes(x = year, y = tax_gdp)) + geom_point() + geom_line()
+
+plot <- merged %>%
+  filter(cd_percent <= 100)
+
+ggplot(plot, aes(x=tax_gdp, y=cd)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+
+time_series <- read_csv("raw-data/long_time_series.csv") %>%
+  group_by(country) %>%
+  filter(!is.na(cd)) %>%
+  filter(!country %in% c("Nigeria", "New Zeland"))
+
+ggplot(time_series, aes(x=year, y=cd, color = country)) + geom_line(size =1.25) + labs(title = "Long Time Series of Cash Demand", subtitle = "Reversal of the Long Period of Decline in the 1990s", x = "Year", y = "Cash Demand (CiC / GDP)", color = "Country")
+  
 
 ```
