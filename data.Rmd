@@ -1,0 +1,63 @@
+---
+title: "datascrapping"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(devtools)
+library(readxl)
+library(foreign)
+library(plm)
+library(lmtest)
+library(janitor)
+library(stargazer)
+library(broom)
+library(gt)
+library(tidyverse)
+```
+
+
+```{r cars}
+australia <- read_excel("raw-data/australia_raw_data.xls") %>%
+  mutate(dec = str_detect(date, "-12-")) %>%
+  filter(dec == "TRUE") %>%
+  write_csv(australia, "raw-data/australia_raw_data.csv")
+
+large_small <- read_xlsx("raw-data/large_small_2.xlsx")
+
+large_small_cd <- large_small %>%
+  left_join(gdp_weo, by = c("country","year")) %>%
+  mutate(large_gdp = large / gdp) %>%
+  mutate(small_gdp = small / gdp) %>%
+  mutate(total_gdp = total / gdp) %>%
+  drop_na(small_gdp) %>%
+  drop_na(large_gdp) %>%
+  group_by(country)
+
+euro <- read_xlsx("raw-data/euro.xlsx") %>%
+mutate(dec = str_detect(date, "-12")) %>%
+  filter(dec == "TRUE") %>%
+  arrange(date) %>%
+  mutate(`500` = `500` *1000) %>%
+  mutate(`200` = `200` *1000) %>%
+  mutate(`100` = `100` *1000) %>%
+  mutate(`50` = `50` *1000) %>%
+  mutate(`20` = `20` *1000) %>%
+  mutate(`10` = `10` *1000) %>%
+  mutate(`5` = `5` *1000) %>%
+  mutate(total = `500` + `200` + `100` + `50` + `20` + `10` + `5`)
+  write_csv(euro, "raw-data/euro_2.csv")
+
+
+#small notes
+ggplot(large_small_cd, aes(x= year, y=small_gdp, color = country)) + geom_point() + geom_line() + labs(title = "Cash Demand as a Means of Payment Over Time", subtitle = "Declining Trends", x = "Year", y= "Value of Small Denomination Bills / GDP")
+
+ggplot(large_small_cd, aes(x = year, y = large_gdp, color = country)) + geom_point() + geom_line() + labs(title = "Cash Demand as a Store of Value Over Time", subtitle = "Accelerating Trends", x = "Year", y= "Value of Small Denomination Bills / GDP")
+
+ggplot(large_small_cd, aes(x = year, y = total_gdp, color = country)) + geom_point() + geom_line()
+
+
+```
+
