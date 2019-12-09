@@ -788,4 +788,70 @@ time_series <- read_csv("raw-data/long_time_series.csv") %>%
 ggplot(time_series, aes(x=year, y=cd, color = country)) + geom_line(size =1.25) + labs(title = "Long Time Series of Cash Demand", subtitle = "Reversal of the Long Period of Decline in the 1990s", x = "Year", y = "Cash Demand (CiC / GDP)", color = "Country")
   
 
+large_small_full_dataset <- large_small_cd %>%
+  left_join(interest_rates_imf, by = c("country", "year")) %>%
+  left_join(interest_rates_wdi, by = c("country", "country_code", "year")) %>%
+  left_join(tax_gdp, by = c("country", "country_code", "year")) %>%
+  left_join(eci_2, by = c("country", "year")) %>%
+  left_join(uncertainty_2, by = c("country_code", "year")) %>%
+  left_join(economic_freedom_2, by = c("country", "year")) %>%
+  left_join(shadow_economy, by = c("country", "year")) %>%
+  left_join(urbanization, by = c("country", "country_code", "year")) %>%
+  left_join(crime, by = c("country", "country_code", "year")) %>%
+  mutate(region = ifelse(country %in% c("Australia", "Brunei Darussalam", "Cambodia", "Fiji", "Hong Kong", "Indonesia", "Japan", "Korea, Rep.", "Macao", "Malaysia", "Mongolia", "Myanmar", "Thailand", "Papua New Guinea", "Philippines", "Samoa", "Singapore", "Solomon Islands", "Tonga", "Vanuatu", "New Zealand"), "East Asia and Pacific",
+          ifelse(country %in% c("Albania", "Armenia", "Azerbaijan", "Belarus", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Georgia", "Hungary", "Iceland", "Kazakhstan", "Kyrgyz Republic", "Moldova", "North Macedonia", "Norway", "Poland", "Romania", "Serbia", "Sweden", "Switzerland", "Tajikistan", "Turkey", "Ukraine", "United Kingdom"), "Europe and Central Asia", 
+           ifelse(country %in% c("Antigua and Barbuda", "Argentina", "Bahamas", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Grenada", "Guatemala", "Guyana", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama", "Paraguay", "Peru", "St. Kitts and Nevis", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Trinidad and Tobago", "Uruguay", "Venezuela, RB"), "Latin America and The Caribbean",
+            ifelse(country %in% c("Algeria", "Djibouti", "Egypt", "Iraq", "Israel", "Jordan", "Kuwait", "Morocco", "Oman", "Qatar", "Syrian Arab Republic", "Tunisia", "United Arab Emirates"), "Middle East and North Africa", 
+             ifelse(country %in% c("Canada", "United States"), "North America",
+              ifelse(country %in% c("Afghanistan", "Bangladesh", "Bhutan", "India", "Maldives", "Nepal", "Pakistan", "Sri Lanka"), "South Asia",
+               ifelse(country %in% c("Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo DR", "Congo, Rep.", "Cote d'Ivoire", "Equatorial Guinea", "Eritrea", "Eswatini", "Gabon", "Ghana", "Guinea-Bissau", "Kenya", "Lesotho", "Liberia", "Madagascar", "Mali", "Mauritania", "Mauritius", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Uganda", "Zambia", "Zimbabwe"), "Sub-Saharan Africa", "NA")))))))) %>%
+   mutate(development = ifelse(country %in% c("Afghanistan", "Benin", "Burkina Faso", "Burundi", "Central African Republic", "Chad", "Congo DR", "Eritrea", "Guinea-Bissau", "Haiti", "Liberia", "Madagascar", "Mali", "Mozambique", "Nepal", "Niger", "Rwanda", "Sierra Leone", "South Sudan", "Syrian Arab Republic", "Tajikistan", "Tanzania", "Togo", "Uganda"), "Low-Income Economies",
+                        ifelse(country %in% c("Angola", "Bangladesh", "Bhutan", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Comoros", "Congo, Rep.", "Cote d'Ivoire", "Djibouti", "Egypt", "Eswatini", "Ghana", "Honduras", "India", "Indonesia", "Kenya", "Kyrgyz Republic", "Lesotho", "Mauritania", "Moldova", "Mongolia", "Morocco", "Myanmar", "Nicaragua", "Nigeria", "Pakistan", "Papua New Guinea", "Philippines", "Sao Tome and Principe", "Senegal", "Solomon Islands", "Sudan", "Tunisia", "Ukraine", "Vanuatu", "Zambia", "Zimbabwe"), "Lower-Middle-Income Economies", 
+                        ifelse(country %in% c("Albania", "Algeria", "Argentina", "Armenia", "Azerbaijan", "Belarus", "Belize", "Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Equatorial Guinea", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Malaysia", "Maldives", "Mauritius", "Mexico", "Namibia", "North Macedonia", "Paraguay", "Peru", "Romania", "Samoa", "Serbia", "Sri Lanka", "South Africa", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Thailand", "Tonga", "Turkey", "Venezuela, RB"), "Upper-Middle-Income Economies",
+                        ifelse(country %in% c("Antigua and Barbuda", "Australia", "Bahamas", "Barbados", "Brunei Darussalam", "Canada", "Chile", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Hong Kong", "Hungary", "Iceland", "Israel", "Japan", "Korea, Rep.", "Kuwait", "Macao", "New Zealand", "Norway", "Oman", "Panama", "Poland", "Qatar", "Seychelles", "Singapore", "St. Kitts and Nevis", "Sweden", "Switzerland", "Trinidad and Tobago", "United Arab Emirates", "United Kingdom", "United States", "Uruguay"), "High-Income Economies", "NA")))))
+
+write_csv(large_small_full_dataset, "raw-data/large_small_dataset.csv")
+
+uncertainty_ea <- uncertainty %>%
+  mutate(euro_area = ifelse(country_code %in% c("DEU", "ESP", "FRA", "ITA", "NLD", "IRL"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(uncertainty = mean(uncertainty)) %>%
+  mutate(country_code = "EMU")
+  
+uncertainty_2 <- uncertainty_ea %>%
+  full_join(uncertainty, by = c("country_code", "year", "uncertainty"))
+
+eci_ea <- eci %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Lithuania", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(eci = mean(eci)) %>%
+  mutate(country = "Euro Area") 
+
+eci_2 <- eci_ea %>%
+  full_join(eci, by = c("country", "year", "eci"))
+
+economic_freedom_ea <- economic_freedom %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Latvia", "Lithuania", "Luxembourg", "Malta", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(monetary_freedom = mean(monetary_freedom, na.rm = TRUE),
+            business_freedom = mean(business_freedom, na.rm = TRUE),
+            property_rights = mean(property_rights, na.rm = TRUE),
+            investment_freedom = mean(investment_freedom, na.rm = TRUE),
+            financial_freedom = mean(financial_freedom, na.rm = TRUE)) %>%
+  mutate(country = "Euro Area") 
+
+economic_freedom_2 <- economic_freedom_ea %>%
+  full_join(economic_freedom, by = c("country", "year", "monetary_freedom", "business_freedom", "property_rights")) %>%
+  arrange(country, year)
+
+japan_imf_interest_rate <- read_csv("raw-data/ir01_m_1_en.csv") %>%
+mutate(dec = str_detect(date, "/12")) %>%
+  filter(dec == "TRUE")
+
+  write_csv(japan_imf_interest_rate, "raw-data/ir01_m_1_en.csv")
+
+
 ```
