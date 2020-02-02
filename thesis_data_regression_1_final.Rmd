@@ -1,0 +1,74 @@
+---
+title: "thesis_data_regression_1_final"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(devtools)
+library(readxl)
+library(foreign)
+library(plm)
+library(lmtest)
+library(janitor)
+library(stargazer)
+library(broom)
+library(gt)
+library(tidyverse)
+```
+
+```{r load data sets}
+
+#currency in circulation 
+
+ifs_cic <- read_xlsx("raw-data/international_financial_statistics_ updated.xlsx") %>%
+  gather(year, value, -c(country)) %>%
+  drop_na() %>%
+  mutate(cic = value * 1000000) %>%
+  select(-value) %>%
+  mutate(year = as.numeric(year)) %>%
+filter(year != "1997") %>%
+filter(year != "1998") %>%
+filter(year != "1999") 
+
+#gdp
+
+gdp_final <- read_csv("raw-data/gdp_weo_2.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp = value)
+
+#cash demand
+ 
+cash_demand <- ifs_cic %>%
+full_join(gdp_final, by = c("year", "country")) %>%
+mutate(cd = cic/gdp) %>%
+mutate(log_cd = log(cd)) %>%
+mutate(log_cic = log(cic)) %>%
+filter(log_cd != "-Inf") %>%
+arrange(desc(cd))
+
+
+```
+
+```{r load explanatory variables data sets}
+
+deposit_interest_rate <- read_csv("raw-data/interest_rates_wdi.csv", skip = 3) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(interest_rates_wdi = value) 
+
+
+
+
+
+`
