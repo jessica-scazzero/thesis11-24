@@ -258,3 +258,37 @@ filter(cic != "NA")
 write.csv(final_regression_1_data, "final_regression_1_data.csv")
 
 ```
+
+```{r follow-up data set creation}
+
+#oecd
+
+final_data_oecd <- read_csv("raw-data/final_regression_1_data.csv") %>%
+  filter(country %in% c("Australia", "Austria", "Belgium", "Canada", "Chile", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Japan", "Korea", "Latvia", "Lithuania", "Lexembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")) 
+
+write.csv(final_data_oecd, "final_data_oecd.csv")
+
+#level of development
+
+final_data_high_income <- read_csv("raw-data/final_regression_1_data.csv") %>%
+filter(development == "High-Income Economies")
+
+write.csv(final_data_high_income, "final_data_high_income.csv")
+
+final_data_upper_middle_income <- read_csv("raw-data/final_regression_1_data.csv") %>%
+filter(development == "Upper-Middle-Income Economies")
+
+write.csv(final_data_upper_middle_income, "final_data_upper_middle_income.csv")
+
+final_data_lower_middle_income <- read_csv("raw-data/final_regression_1_data.csv") %>%
+filter(development == "Lower-Middle-Income Economies")
+
+write.csv(final_data_lower_middle_income, "final_data_lower_middle_income.csv")
+
+final_data_low_income <- read_csv("raw-data/final_regression_1_data.csv") %>%
+filter(development == "Low-Income Economies")
+
+write.csv(final_data_low_income, "final_data_low_income.csv")
+
+```
+

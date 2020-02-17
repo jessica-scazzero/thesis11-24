@@ -1,0 +1,237 @@
+---
+title: "thesis_data_regression_3_final"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(devtools)
+library(readxl)
+library(foreign)
+library(plm)
+library(lmtest)
+library(janitor)
+library(stargazer)
+library(broom)
+library(gt)
+library(tidyverse)
+```
+
+
+```{r load currency data}
+
+#currency in circulation 
+
+cic_denomination <- read_xlsx("raw-data/regression_3_bis_data_by_denomination.xlsx")
+
+#gdp
+
+gdp_final <- read_csv("raw-data/gdp_weo_2.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp = value)
+
+#cash demand
+ 
+cash_demand_3 <- cic_denomination %>%
+left_join(gdp_final, by = c("year", "country")) %>%
+mutate(cd_low = low/gdp) %>%
+mutate(cd_high = high/gdp) %>%
+mutate(cd_total = total/gdp) %>%
+arrange(country)
+
+#interest rates
+
+deposit_interest_rate <- read_csv("raw-data/interest_rates_wdi.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(deposit_interest_rate = value) 
+
+treasury_bill_rate <- read_xlsx("raw-data/imf_treasury_bill_interest_rates.xlsx", skip = 5) %>%
+select(-`Scale`, -`Base Year`) %>%
+gather(Year, Value, -c(Country)) %>%
+filter(Value != "...") %>%
+rename(year = Year) %>%
+rename(treasury_bill_rate = Value) %>%
+mutate(treasury_bill_rate = as.numeric(treasury_bill_rate)) %>%
+mutate(treasury_bill_rate = round(treasury_bill_rate, digits = 4)) %>%
+rename(country = Country) %>%
+mutate(year = as.numeric(year)) %>%
+filter(year != "NA")  
+
+#economic complexity index
+
+eci <- read_csv("raw-data/eci_country_rankings.csv")  %>%
+clean_names() %>%
+select(-country_id) %>%
+mutate(year = as.numeric(year))
+
+eci_ea <- eci %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Lithuania", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(eci = mean(eci)) %>%
+  mutate(country = "Euro Area") 
+
+eci_final <- eci_ea %>%
+  full_join(eci, by = c("country", "year", "eci"))
+
+#uncertainty index
+
+uncertainty <- read_excel("raw-data/uncertainty.xlsx") %>%
+mutate(year = str_sub(year, 1,4)) %>%
+mutate_all(as.character) %>%
+mutate(year = as.numeric(year)) %>%
+pivot_longer(-year, names_to = "country_code", values_to = "uncertainty") %>%
+mutate(uncertainty = as.numeric(uncertainty)) %>%
+group_by(country_code, year) %>%
+summarize(uncertainty = mean(uncertainty, na.rm = TRUE))
+
+uncertainty_ea <- uncertainty %>%
+  mutate(euro_area = ifelse(country_code %in% c("DEU", "ESP", "FRA", "ITA", "NLD", "IRL"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(uncertainty = mean(uncertainty)) %>%
+  mutate(country_code = "EMU")
+
+uncertainty_final <- uncertainty_ea %>%
+  full_join(uncertainty, by = c("country_code", "year", "uncertainty"))
+
+#tax to gdp
+
+tax_gdp_final <- read_csv("raw-data/tax_gdp.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+rename(country = `Country Name`) %>%
+mutate(year = as.numeric(year)) %>%
+mutate(country = as.character(country)) %>%
+rename(country_code = `Country Code`) %>%
+drop_na() %>%
+rename(tax_gdp = value) 
+
+#economic freedom indicies 
+
+economic_freedom <- read_csv("raw-data/data.csv") %>%
+  clean_names() %>%
+  rename(country = name) %>%
+  rename(year = index_year) %>%
+  mutate(overall_score = as.numeric(overall_score)) %>%
+  mutate(business_freedom = as.numeric(business_freedom)) %>%
+  mutate(monetary_freedom = as.numeric(monetary_freedom)) %>%
+  mutate(financial_freedom = as.numeric(financial_freedom)) %>%
+  mutate(investment_freedom = as.numeric(investment_freedom)) %>%
+  mutate(trade_freedom = as.numeric(trade_freedom)) %>%
+  mutate(government_integrity = as.numeric(government_integrity)) %>%
+  mutate(judicial_effectiveness = as.numeric(judicial_effectiveness)) %>%
+  mutate(tax_burden = as.numeric(tax_burden)) %>%
+  mutate(government_spending = as.numeric(government_spending)) %>%
+  mutate(property_rights = as.numeric(property_rights)) %>%
+  mutate(fiscal_health = as.numeric(fiscal_health)) %>%
+  mutate(labor_freedom = as.numeric(labor_freedom))
+
+economic_freedom_ea <- economic_freedom %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Latvia", "Lithuania", "Luxembourg", "Malta", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(monetary_freedom = mean(monetary_freedom, na.rm = TRUE),
+          business_freedom = mean(business_freedom, na.rm = TRUE),
+          property_rights = mean(property_rights, na.rm = TRUE),
+          investment_freedom = mean(investment_freedom, na.rm = TRUE),
+          financial_freedom = mean(financial_freedom, na.rm = TRUE), 
+          trade_freedom = mean(trade_freedom, na.rm = TRUE),
+          government_integrity = mean(government_integrity, na.rm = TRUE),
+          judicial_effectiveness = mean(judicial_effectiveness, na.rm = TRUE)) %>%
+  mutate(country = "Euro Area") 
+
+economic_freedom_final <- economic_freedom_ea %>%
+  full_join(economic_freedom, by = c("country", "year", "monetary_freedom", "business_freedom", "property_rights", "investment_freedom", "financial_freedom", "trade_freedom", "government_integrity", "judicial_effectiveness")) %>%
+  arrange(country, year)
+
+
+#urban population growth
+
+urban_pop_growth_final <- read_csv("raw-data/urban_pop_growth.csv", skip = 4) %>%
+  select(-`Indicator Name`, -`Indicator Code`)%>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(urban_pop_growth = value) 
+
+#crime statistics 
+
+crime_final <- read_csv("raw-data/intentional_homocide.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(crime = value) 
+
+
+```
+
+```{r full data set creation}
+final_regression_3_data <- cash_demand_3 %>%
+  left_join(deposit_interest_rate, by = c("country", "country_code", "year")) %>%
+  left_join(treasury_bill_rate, by = c("country", "year")) %>%
+  left_join(tax_gdp_final, by = c("country", "country_code", "year")) %>%
+  left_join(eci_final, by = c("country", "year")) %>%
+  left_join(uncertainty_final, by = c("country_code", "year")) %>%
+  left_join(economic_freedom_final, by = c("country", "year")) %>%
+  left_join(crime_final, by = c("country", "country_code", "year")) %>%
+  left_join(urban_pop_growth_final, by = c("country", "country_code", "year"))
+
+write.csv(final_regression_3_data, "final_regression_3_data.csv")
+
+ggplot(final_regression_3_data, aes(x=year, y=cd_low, color=country)) + geom_point() + geom_line()
+
+
+high_2012 <- final_regression_3_data %>%
+filter(year == "2012") %>%
+group_by(country) %>%
+summarize("2012" = cd_high)
+
+high_2018 <- final_regression_3_data %>%
+filter(year == "2018") %>%
+group_by(country) %>%
+summarize("2018" = cd_high)
+
+high_cd_pc <- high_2012 %>%
+  left_join(high_2018, by = "country") %>%
+  mutate(difference = ((`2018` - `2012`)/`2012`) * 100) %>%
+  arrange(desc(difference)) %>%
+  filter(country != "Argentina")
+
+ggplot(high_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() 
+
+low_2012 <- final_regression_3_data %>%
+filter(year == "2012") %>%
+group_by(country) %>%
+summarize("2012" = cd_low)
+
+low_2018 <- final_regression_3_data %>%
+filter(year == "2018") %>%
+group_by(country) %>%
+summarize("2018" = cd_low)
+
+low_cd_pc <- low_2012 %>%
+  left_join(low_2018, by = "country") %>%
+  mutate(difference = ((`2018` - `2012`)/`2012`) * 100) %>%
+  arrange(desc(difference))
+
+ggplot(low_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() 
+
+
+```
