@@ -1205,39 +1205,39 @@ Year,Country,Country ID,ECI,ECI+
 2015,Czech Republic,eucze,1.67011,1.17817
 2016,Czech Republic,eucze,1.66047,
 2017,Czech Republic,eucze,1.6431,
-1980,Democratic Republic of the Congo,afcod,-1.49539,-1.37315
-1981,Democratic Republic of the Congo,afcod,-1.57941,-1.52649
-1982,Democratic Republic of the Congo,afcod,-1.49485,-1.52375
-1983,Democratic Republic of the Congo,afcod,-1.5312,-1.54605
-1984,Democratic Republic of the Congo,afcod,-1.34137,-1.48028
-1985,Democratic Republic of the Congo,afcod,-1.24149,-1.44694
-1986,Democratic Republic of the Congo,afcod,-1.30384,-1.39007
-1987,Democratic Republic of the Congo,afcod,-1.45864,-1.48742
-1988,Democratic Republic of the Congo,afcod,-1.24313,-1.26926
-1989,Democratic Republic of the Congo,afcod,-1.20444,-1.29346
-1990,Democratic Republic of the Congo,afcod,-1.14496,-1.32991
-1991,Democratic Republic of the Congo,afcod,-1.17493,-1.53148
-1992,Democratic Republic of the Congo,afcod,-1.46347,-1.65108
-1993,Democratic Republic of the Congo,afcod,-1.43311,-1.60799
-1994,Democratic Republic of the Congo,afcod,-1.38968,-1.56105
-1995,Democratic Republic of the Congo,afcod,-1.32594,-1.45326
-1996,Democratic Republic of the Congo,afcod,-1.32809,-1.43303
-1997,Democratic Republic of the Congo,afcod,-1.38505,-1.52208
-1998,Democratic Republic of the Congo,afcod,-1.33985,-1.57334
-1999,Democratic Republic of the Congo,afcod,-1.52529,-1.87693
-2000,Democratic Republic of the Congo,afcod,-1.27315,-1.55942
-2001,Democratic Republic of the Congo,afcod,-1.1108,-1.48266
-2002,Democratic Republic of the Congo,afcod,-1.10486,-1.35884
-2003,Democratic Republic of the Congo,afcod,-1.1042,-1.8727
-2004,Democratic Republic of the Congo,afcod,-1.16123,-2.11436
-2005,Democratic Republic of the Congo,afcod,-1.34175,-2.27446
-2006,Democratic Republic of the Congo,afcod,-1.35887,-2.21564
-2007,Democratic Republic of the Congo,afcod,-1.17151,-2.07098
-2008,Democratic Republic of the Congo,afcod,-1.11877,-2.20553
-2009,Democratic Republic of the Congo,afcod,-1.23828,-2.14815
-2010,Democratic Republic of the Congo,afcod,-1.06271,-1.64617
-2011,Democratic Republic of the Congo,afcod,-1.06695,-1.73969
-2012,Democratic Republic of the Congo,afcod,-1.29544,-1.87504
+1980,Congo DR,afcod,-1.49539,-1.37315
+1981,Congo DR,afcod,-1.57941,-1.52649
+1982,Congo DR,afcod,-1.49485,-1.52375
+1983,Congo DR,afcod,-1.5312,-1.54605
+1984,Congo DR,afcod,-1.34137,-1.48028
+1985,Congo DR,afcod,-1.24149,-1.44694
+1986,Congo DR,afcod,-1.30384,-1.39007
+1987,Congo DR,afcod,-1.45864,-1.48742
+1988,Congo DR,afcod,-1.24313,-1.26926
+1989,Congo DR,afcod,-1.20444,-1.29346
+1990,Congo DR,afcod,-1.14496,-1.32991
+1991,Congo DR,afcod,-1.17493,-1.53148
+1992,Congo DR,afcod,-1.46347,-1.65108
+1993,Congo DR,afcod,-1.43311,-1.60799
+1994,Congo DR,afcod,-1.38968,-1.56105
+1995,Congo DR,afcod,-1.32594,-1.45326
+1996,Congo DR,afcod,-1.32809,-1.43303
+1997,Congo DR,afcod,-1.38505,-1.52208
+1998,Congo DR,afcod,-1.33985,-1.57334
+1999,Congo DR,afcod,-1.52529,-1.87693
+2000,Congo DR,afcod,-1.27315,-1.55942
+2001,Congo DR,afcod,-1.1108,-1.48266
+2002,Congo DR,afcod,-1.10486,-1.35884
+2003,Congo DR,afcod,-1.1042,-1.8727
+2004,Congo DR,afcod,-1.16123,-2.11436
+2005,Congo DR,afcod,-1.34175,-2.27446
+2006,Congo DR,afcod,-1.35887,-2.21564
+2007,Congo DR,afcod,-1.17151,-2.07098
+2008,Congo DR,afcod,-1.11877,-2.20553
+2009,Congo DR,afcod,-1.23828,-2.14815
+2010,Congo DR,afcod,-1.06271,-1.64617
+2011,Congo DR,afcod,-1.06695,-1.73969
+2012,Congo DR,afcod,-1.29544,-1.87504
 1964,Denmark,eudnk,1.43533,1.35771
 1965,Denmark,eudnk,1.46002,1.36862
 1966,Denmark,eudnk,1.31681,1.30886
@@ -4183,60 +4183,60 @@ Year,Country,Country ID,ECI,ECI+
 2015,Qatar,asqat,0.322636,-0.752596
 2016,Qatar,asqat,0.499297,
 2017,Qatar,asqat,0.396207,
-1964,Republic of the Congo,afcog,-0.930207,-0.898081
-1965,Republic of the Congo,afcog,-0.777529,-0.773318
-1966,Republic of the Congo,afcog,-1.01512,-0.829238
-1967,Republic of the Congo,afcog,-0.85448,-0.937673
-1968,Republic of the Congo,afcog,-0.857768,-1.01513
-1969,Republic of the Congo,afcog,-0.844418,-0.903495
-1970,Republic of the Congo,afcog,-0.96419,-0.867312
-1971,Republic of the Congo,afcog,-0.964024,-0.899779
-1972,Republic of the Congo,afcog,-1.07979,-1.0759
-1973,Republic of the Congo,afcog,-1.17314,-1.15806
-1974,Republic of the Congo,afcog,-1.22077,-1.16102
-1975,Republic of the Congo,afcog,-1.21109,-1.19632
-1976,Republic of the Congo,afcog,-1.51863,-1.18918
-1977,Republic of the Congo,afcog,-1.50926,-1.07764
-1978,Republic of the Congo,afcog,-1.24883,-1.10617
-1979,Republic of the Congo,afcog,-1.13528,-1.18008
-1980,Republic of the Congo,afcog,-1.19202,-1.33185
-1981,Republic of the Congo,afcog,-1.66323,-1.51637
-1982,Republic of the Congo,afcog,-1.67642,-1.70126
-1983,Republic of the Congo,afcog,-1.69718,-1.67774
-1984,Republic of the Congo,afcog,-1.68953,-1.63654
-1985,Republic of the Congo,afcog,-1.57239,-1.57563
-1986,Republic of the Congo,afcog,-1.59555,-1.54763
-1987,Republic of the Congo,afcog,-1.56447,-1.62296
-1988,Republic of the Congo,afcog,-1.35371,-1.84011
-1989,Republic of the Congo,afcog,-1.48802,-1.8132
-1990,Republic of the Congo,afcog,-1.50959,-1.83125
-1991,Republic of the Congo,afcog,-1.61876,-1.75172
-1992,Republic of the Congo,afcog,-1.5417,-1.8713
-1993,Republic of the Congo,afcog,-1.45875,-1.85968
-1994,Republic of the Congo,afcog,-1.52143,-1.54137
-1995,Republic of the Congo,afcog,-1.41008,-1.43908
-1996,Republic of the Congo,afcog,-0.845544,-1.36693
-1997,Republic of the Congo,afcog,-1.29766,-1.5232
-1998,Republic of the Congo,afcog,-1.24502,-1.54362
-1999,Republic of the Congo,afcog,-1.45647,-1.52254
-2000,Republic of the Congo,afcog,-1.42348,-1.4673
-2001,Republic of the Congo,afcog,-1.25988,-1.41827
-2002,Republic of the Congo,afcog,-1.30159,-1.60753
-2003,Republic of the Congo,afcog,-1.35403,-1.66494
-2004,Republic of the Congo,afcog,-1.41438,-1.76216
-2005,Republic of the Congo,afcog,-1.56017,-1.97467
-2006,Republic of the Congo,afcog,-1.6858,-2.10821
-2007,Republic of the Congo,afcog,-1.82685,-2.55978
-2008,Republic of the Congo,afcog,-1.89518,-2.777
-2009,Republic of the Congo,afcog,-1.79244,-2.76372
-2010,Republic of the Congo,afcog,-1.77145,-2.55127
-2011,Republic of the Congo,afcog,-1.21695,-1.91928
-2012,Republic of the Congo,afcog,-1.12329,-1.69824
-2013,Republic of the Congo,afcog,-0.675039,-0.85404
-2014,Republic of the Congo,afcog,-0.730753,-0.86997
-2015,Republic of the Congo,afcog,-1.03802,-1.10662
-2016,Republic of the Congo,afcog,-1.07835,
-2017,Republic of the Congo,afcog,-0.898092,
+1964,"Congo, Rep.",afcog,-0.930207,-0.898081
+1965,"Congo, Rep.",afcog,-0.777529,-0.773318
+1966,"Congo, Rep.",afcog,-1.01512,-0.829238
+1967,"Congo, Rep.",afcog,-0.85448,-0.937673
+1968,"Congo, Rep.",afcog,-0.857768,-1.01513
+1969,"Congo, Rep.",afcog,-0.844418,-0.903495
+1970,"Congo, Rep.",afcog,-0.96419,-0.867312
+1971,"Congo, Rep.",afcog,-0.964024,-0.899779
+1972,"Congo, Rep.",afcog,-1.07979,-1.0759
+1973,"Congo, Rep.",afcog,-1.17314,-1.15806
+1974,"Congo, Rep.",afcog,-1.22077,-1.16102
+1975,"Congo, Rep.",afcog,-1.21109,-1.19632
+1976,"Congo, Rep.",afcog,-1.51863,-1.18918
+1977,"Congo, Rep.",afcog,-1.50926,-1.07764
+1978,"Congo, Rep.",afcog,-1.24883,-1.10617
+1979,"Congo, Rep.",afcog,-1.13528,-1.18008
+1980,"Congo, Rep.",afcog,-1.19202,-1.33185
+1981,"Congo, Rep.",afcog,-1.66323,-1.51637
+1982,"Congo, Rep.",afcog,-1.67642,-1.70126
+1983,"Congo, Rep.",afcog,-1.69718,-1.67774
+1984,"Congo, Rep.",afcog,-1.68953,-1.63654
+1985,"Congo, Rep.",afcog,-1.57239,-1.57563
+1986,"Congo, Rep.",afcog,-1.59555,-1.54763
+1987,"Congo, Rep.",afcog,-1.56447,-1.62296
+1988,"Congo, Rep.",afcog,-1.35371,-1.84011
+1989,"Congo, Rep.",afcog,-1.48802,-1.8132
+1990,"Congo, Rep.",afcog,-1.50959,-1.83125
+1991,"Congo, Rep.",afcog,-1.61876,-1.75172
+1992,"Congo, Rep.",afcog,-1.5417,-1.8713
+1993,"Congo, Rep.",afcog,-1.45875,-1.85968
+1994,"Congo, Rep.",afcog,-1.52143,-1.54137
+1995,"Congo, Rep.",afcog,-1.41008,-1.43908
+1996,"Congo, Rep.",afcog,-0.845544,-1.36693
+1997,"Congo, Rep.",afcog,-1.29766,-1.5232
+1998,"Congo, Rep.",afcog,-1.24502,-1.54362
+1999,"Congo, Rep.",afcog,-1.45647,-1.52254
+2000,"Congo, Rep.",afcog,-1.42348,-1.4673
+2001,"Congo, Rep.",afcog,-1.25988,-1.41827
+2002,"Congo, Rep.",afcog,-1.30159,-1.60753
+2003,"Congo, Rep.",afcog,-1.35403,-1.66494
+2004,"Congo, Rep.",afcog,-1.41438,-1.76216
+2005,"Congo, Rep.",afcog,-1.56017,-1.97467
+2006,"Congo, Rep.",afcog,-1.6858,-2.10821
+2007,"Congo, Rep.",afcog,-1.82685,-2.55978
+2008,"Congo, Rep.",afcog,-1.89518,-2.777
+2009,"Congo, Rep.",afcog,-1.79244,-2.76372
+2010,"Congo, Rep.",afcog,-1.77145,-2.55127
+2011,"Congo, Rep.",afcog,-1.21695,-1.91928
+2012,"Congo, Rep.",afcog,-1.12329,-1.69824
+2013,"Congo, Rep.",afcog,-0.675039,-0.85404
+2014,"Congo, Rep.",afcog,-0.730753,-0.86997
+2015,"Congo, Rep.",afcog,-1.03802,-1.10662
+2016,"Congo, Rep.",afcog,-1.07835,
+2017,"Congo, Rep.",afcog,-0.898092,
 1964,Romania,eurou,0.280962,0.477438
 1965,Romania,eurou,0.386979,0.540004
 1966,Romania,eurou,0.319795,0.543705
@@ -4596,60 +4596,60 @@ Year,Country,Country ID,ECI,ECI+
 2015,South Africa,afzaf,0.303549,0.261409
 2016,South Africa,afzaf,0.28477,
 2017,South Africa,afzaf,0.268797,
-1964,South Korea,askor,0.651934,0.492763
-1965,South Korea,askor,0.689753,0.68569
-1966,South Korea,askor,0.829615,0.694803
-1967,South Korea,askor,0.773875,0.592959
-1968,South Korea,askor,0.708068,0.531692
-1969,South Korea,askor,0.732955,0.576573
-1970,South Korea,askor,0.621873,0.557192
-1971,South Korea,askor,0.627842,0.577901
-1972,South Korea,askor,0.626045,0.723701
-1973,South Korea,askor,0.761627,0.884615
-1974,South Korea,askor,0.821309,0.934939
-1975,South Korea,askor,0.829413,0.918859
-1976,South Korea,askor,0.753741,0.865202
-1977,South Korea,askor,0.682189,0.845226
-1978,South Korea,askor,0.767752,0.833534
-1979,South Korea,askor,0.819243,0.92388
-1980,South Korea,askor,0.85489,0.905375
-1981,South Korea,askor,0.902423,0.977777
-1982,South Korea,askor,0.885554,0.988787
-1983,South Korea,askor,0.870192,1.10419
-1984,South Korea,askor,0.925091,1.04303
-1985,South Korea,askor,0.938733,1.06582
-1986,South Korea,askor,0.903033,1.07239
-1987,South Korea,askor,0.919086,1.11414
-1988,South Korea,askor,0.946263,1.1475
-1989,South Korea,askor,0.834166,1.15677
-1990,South Korea,askor,0.898145,1.16587
-1991,South Korea,askor,0.876456,1.16859
-1992,South Korea,askor,0.941965,1.25154
-1993,South Korea,askor,0.821888,1.23666
-1994,South Korea,askor,0.855669,1.23814
-1995,South Korea,askor,0.9454,1.25084
-1996,South Korea,askor,1.02663,1.24604
-1997,South Korea,askor,1.14944,1.25354
-1998,South Korea,askor,1.03141,1.21424
-1999,South Korea,askor,1.10914,1.22796
-2000,South Korea,askor,1.19698,1.28888
-2001,South Korea,askor,1.23895,1.32013
-2002,South Korea,askor,1.29563,1.31652
-2003,South Korea,askor,1.31421,1.31666
-2004,South Korea,askor,1.27258,1.34412
-2005,South Korea,askor,1.41097,1.33197
-2006,South Korea,askor,1.52046,1.33833
-2007,South Korea,askor,1.54709,1.34088
-2008,South Korea,askor,1.52745,1.34118
-2009,South Korea,askor,1.49631,1.31646
-2010,South Korea,askor,1.57505,1.31428
-2011,South Korea,askor,1.70696,1.36534
-2012,South Korea,askor,1.64658,1.40234
-2013,South Korea,askor,1.82762,1.45373
-2014,South Korea,askor,1.90646,1.41554
-2015,South Korea,askor,1.65462,1.41318
-2016,South Korea,askor,1.69142,
-2017,South Korea,askor,1.77613,
+1964,"Korea, Rep.",askor,0.651934,0.492763
+1965,"Korea, Rep.",askor,0.689753,0.68569
+1966,"Korea, Rep.",askor,0.829615,0.694803
+1967,"Korea, Rep.",askor,0.773875,0.592959
+1968,"Korea, Rep.",askor,0.708068,0.531692
+1969,"Korea, Rep.",askor,0.732955,0.576573
+1970,"Korea, Rep.",askor,0.621873,0.557192
+1971,"Korea, Rep.",askor,0.627842,0.577901
+1972,"Korea, Rep.",askor,0.626045,0.723701
+1973,"Korea, Rep.",askor,0.761627,0.884615
+1974,"Korea, Rep.",askor,0.821309,0.934939
+1975,"Korea, Rep.",askor,0.829413,0.918859
+1976,"Korea, Rep.",askor,0.753741,0.865202
+1977,"Korea, Rep.",askor,0.682189,0.845226
+1978,"Korea, Rep.",askor,0.767752,0.833534
+1979,"Korea, Rep.",askor,0.819243,0.92388
+1980,"Korea, Rep.",askor,0.85489,0.905375
+1981,"Korea, Rep.",askor,0.902423,0.977777
+1982,"Korea, Rep.",askor,0.885554,0.988787
+1983,"Korea, Rep.",askor,0.870192,1.10419
+1984,"Korea, Rep.",askor,0.925091,1.04303
+1985,"Korea, Rep.",askor,0.938733,1.06582
+1986,"Korea, Rep.",askor,0.903033,1.07239
+1987,"Korea, Rep.",askor,0.919086,1.11414
+1988,"Korea, Rep.",askor,0.946263,1.1475
+1989,"Korea, Rep.",askor,0.834166,1.15677
+1990,"Korea, Rep.",askor,0.898145,1.16587
+1991,"Korea, Rep.",askor,0.876456,1.16859
+1992,"Korea, Rep.",askor,0.941965,1.25154
+1993,"Korea, Rep.",askor,0.821888,1.23666
+1994,"Korea, Rep.",askor,0.855669,1.23814
+1995,"Korea, Rep.",askor,0.9454,1.25084
+1996,"Korea, Rep.",askor,1.02663,1.24604
+1997,"Korea, Rep.",askor,1.14944,1.25354
+1998,"Korea, Rep.",askor,1.03141,1.21424
+1999,"Korea, Rep.",askor,1.10914,1.22796
+2000,"Korea, Rep.",askor,1.19698,1.28888
+2001,"Korea, Rep.",askor,1.23895,1.32013
+2002,"Korea, Rep.",askor,1.29563,1.31652
+2003,"Korea, Rep.",askor,1.31421,1.31666
+2004,"Korea, Rep.",askor,1.27258,1.34412
+2005,"Korea, Rep.",askor,1.41097,1.33197
+2006,"Korea, Rep.",askor,1.52046,1.33833
+2007,"Korea, Rep.",askor,1.54709,1.34088
+2008,"Korea, Rep.",askor,1.52745,1.34118
+2009,"Korea, Rep.",askor,1.49631,1.31646
+2010,"Korea, Rep.",askor,1.57505,1.31428
+2011,"Korea, Rep.",askor,1.70696,1.36534
+2012,"Korea, Rep.",askor,1.64658,1.40234
+2013,"Korea, Rep.",askor,1.82762,1.45373
+2014,"Korea, Rep.",askor,1.90646,1.41554
+2015,"Korea, Rep.",askor,1.65462,1.41318
+2016,"Korea, Rep.",askor,1.69142,
+2017,"Korea, Rep.",askor,1.77613,
 1964,Spain,euesp,0.593436,0.804249
 1965,Spain,euesp,0.584555,0.850426
 1966,Spain,euesp,0.603584,0.77248
