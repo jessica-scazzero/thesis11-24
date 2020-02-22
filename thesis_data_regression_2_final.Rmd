@@ -5,6 +5,18 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(devtools)
+library(readxl)
+library(foreign)
+library(plm)
+library(lmtest)
+library(janitor)
+library(stargazer)
+library(broom)
+library(gt)
+library(tidyverse)
 ```
 
 ## R Markdown
@@ -14,15 +26,49 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
-summary(cars)
+
+data_2 <- read_csv("raw-data/time_series_data_final_2.csv") 
+
+deposit_interest_rate <- read_csv("raw-data/interest_rates_wdi.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(deposit_interest_rate = value) 
+
+final_regression_2_data <- data_2 %>%
+  left_join(deposit_interest_rate, by = c("country", "country_code", "year")) %>%
+arrange(country, year)
+
+
+longest_time_series_final <- read_csv("raw-data/longest_time_series_final.csv") %>%
+mutate(cd_100 = cd*100) %>%
+group_by(country)
+
+ggplot(longest_time_series_final, aes(x=year, y=cd_100, color = country)) + geom_line()
+
+ggplot(longest_time_series_final, aes(x=year, y=treasury_bill_rate, color = country)) + geom_line()
+
+regression_2_data_final_final <- read_csv("raw-data/regression_2_data_final_final.csv") %>%
+left_join(central_bank_rate, by = c("country", "year")) %>%
+left_join(urbanization, by = c("country", "country_code", "year")) %>%
+left_join(gdp_per_capita, by = c("country", "country_code", "year")) %>%
+left_join(debt_gdp, by = c("country", "year")) %>%
+left_join(tax_gdp, by = c("country", "country_code", "year")) %>%
+left_join(oecd_tax_revenue, by = c("country_code", "year")) %>% left_join(old_population,  by = c("country", "country_code", "year")) 
+
+write_csv(regression_2_data_final_final, "regression_2_data_final.csv")
+  
+oecd_tax_revenue <- read_csv("raw-data/DP_LIVE_22022020031430253.csv") %>%
+  select(`LOCATION`, `TIME`, `Value`) %>%
+  rename(country_code = `LOCATION`) %>%
+  rename(year = `TIME`) %>%
+  mutate(year = as.numeric(year)) %>%
+  rename(oecd_tax_revenue = `Value`)
+  
+
+
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -106,6 +106,9 @@ uncertainty_ea <- uncertainty %>%
 uncertainty_final <- uncertainty_ea %>%
   full_join(uncertainty, by = c("country_code", "year", "uncertainty"))
 
+#economic policy uncertainty
+uncertainty <- read_excel("raw-data/uncertainty.xlsx") %>%
+
 #tax to gdp
 
 tax_gdp_final <- read_csv("raw-data/tax_gdp.csv", skip = 4) %>%
@@ -168,6 +171,16 @@ rename(country_code = `Country Code`) %>%
 mutate(year = as.numeric(year)) %>%
 rename(urban_pop_growth = value) 
 
+urbanization_final <- read_csv("raw-data/urbanization.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+mutate(value = round(value, digits = 3)) %>%
+rename(urbanization = value) 
+
 #crime statistics 
 
 crime_final <- read_csv("raw-data/intentional_homocide.csv", skip = 4) %>%
@@ -179,6 +192,49 @@ rename(country_code = `Country Code`) %>%
 mutate(year = as.numeric(year)) %>%
 rename(crime = value) 
 
+#old popualtion
+
+old_population <- read_csv("raw-data/old_population.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(old_pop_percent = value)
+
+#gdp per capita
+
+gdp_per_capita <- read_csv("raw-data/gdp_per_capita.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp_per_capita = value)
+
+gdp_per_capita_ea <- gdp_per_capita %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Latvia", "Lithuania", "Luxembourg", "Malta", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(gdp_per_capita = mean(gdp_per_capita)) %>%
+  mutate(country = "Euro Area") %>%
+  mutate(country_code = "EMU")
+  
+gdp_per_capita_final <- gdp_per_capita_ea %>%
+  full_join(gdp_per_capita, by = c("country", "country_code", "year", "gdp_per_capita"))
+
+central_bank_rate <- read_excel("raw-data/cbpol_2001.xlsx", skip = 2) %>%
+mutate(period = str_sub(period, 1,4)) %>%
+pivot_longer(-period, names_to = "country", values_to = "central_bank_rate") %>%
+arrange(country, period) %>%
+rename(year = period) %>%
+group_by(country, year) %>%
+summarize(avg_central_bank_rate = round(mean(central_bank_rate, na.rm = TRUE), digits = 2)) %>%
+filter(avg_central_bank_rate != "NaN") %>%
+rename(central_bank_rate = avg_central_bank_rate) %>%
+mutate(year = as.numeric(year))
 
 ```
 
@@ -191,9 +247,14 @@ final_regression_3_data <- cash_demand_3 %>%
   left_join(uncertainty_final, by = c("country_code", "year")) %>%
   left_join(economic_freedom_final, by = c("country", "year")) %>%
   left_join(crime_final, by = c("country", "country_code", "year")) %>%
-  left_join(urban_pop_growth_final, by = c("country", "country_code", "year"))
+  left_join(urban_pop_growth_final, by = c("country", "country_code", "year")) %>%
+  left_join(urbanization, by = c("country", "country_code", "year")) %>%
+  left_join(gdp_per_capita_final, by = c("country", "country_code", "year")) %>%
+  left_join(old_population, by = c("country", "country_code", "year")) %>%
+  left_join(central_bank_rate, by = c("country", "year"))
 
 write.csv(final_regression_3_data, "final_regression_3_data.csv")
+
 
 ggplot(final_regression_3_data, aes(x=year, y=cd_low, color=country)) + geom_point() + geom_line()
 

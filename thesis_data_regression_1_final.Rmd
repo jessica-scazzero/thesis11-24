@@ -216,7 +216,7 @@ rename(urban_pop_growth = value)
 
 #crime statistics 
 
-crime_final <- read_csv("raw-data/intentional_homocide.csv", skip = 3) %>%
+crime <- read_csv("raw-data/intentional_homocide.csv", skip = 4) %>%
 select(-`Indicator Name`, -`Indicator Code`) %>%
 gather(year, value, -c(`Country Name`, `Country Code`)) %>%
 filter(value != "NA") %>%
@@ -224,6 +224,16 @@ rename(country = `Country Name`) %>%
 rename(country_code = `Country Code`) %>%
 mutate(year = as.numeric(year)) %>%
 rename(crime = value) 
+
+crime_ea <- crime %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Latvia", "Lithuania", "Luxembourg", "Malta", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(crime = mean(crime)) %>%
+   mutate(country = "Euro Area") 
+  
+crime_final <- crime_ea %>%
+  full_join(crime, by = c("country", "year", "crime"))
 
 
 ```
@@ -257,6 +267,13 @@ filter(cic != "NA")
 
 write.csv(final_regression_1_data, "final_regression_1_data.csv")
 
+final_regression_1_data_updated <- final_regression_1_data %>%
+group_by(country) %>%
+count() %>%
+filter(n<17) 
+
+
+
 ```
 
 ```{r follow-up data set creation}
@@ -264,7 +281,7 @@ write.csv(final_regression_1_data, "final_regression_1_data.csv")
 #oecd
 
 final_data_oecd <- read_csv("raw-data/final_regression_1_data.csv") %>%
-  filter(country %in% c("Australia", "Austria", "Belgium", "Canada", "Chile", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Japan", "Korea", "Latvia", "Lithuania", "Lexembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")) 
+  filter(country %in% c("Australia", "Austria", "Belgium", "Canada", "Chile", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Japan", "Korea", "Latvia", "Lithuania", "Luxembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")) 
 
 write.csv(final_data_oecd, "final_data_oecd.csv")
 
@@ -290,5 +307,74 @@ filter(development == "Low-Income Economies")
 
 write.csv(final_data_low_income, "final_data_low_income.csv")
 
+edited_data_lower_middle_income <- final_data_lower_middle_income %>%
+filter(country %in% c("Angola", "Bangladesh", "Bolivia", "Ghana", "Kenya", "Moldova", "Mongolia", "Philippines", "Zambia")) %>%
+group_by(year) %>%
+summarize(avg_tax_gdp = mean(tax_gdp, na.rm = TRUE)) %>%
+filter(year != "2018")
+
+ggplot(edited_data_lower_middle_income_2, aes(x=year, y=avg_cd)) + geom_point() + geom_line()
+
+edited_data_lower_middle_income_2 <- final_data_lower_middle_income %>%
+filter(country %in% c("Angola", "Bangladesh", "Bolivia", "Ghana", "Kenya", "Moldova", "Mongolia", "Philippines", "Zambia")) %>%
+group_by(year) %>%
+summarize(avg_cd = mean(cd, na.rm = TRUE)) %>%
+filter(year != "2018")
+
 ```
 
+```{r Addition of new data sets}
+
+#debt to gdp ratio
+
+debt_gdp <- read_xls("raw-data/debt_gdp.xls") %>%
+gather(year, value, -c(country)) %>%
+rename(debt_gdp = value) %>%
+mutate(debt_gdp = as.numeric(debt_gdp)) %>%
+mutate(year = as.numeric(year)) %>%
+mutate(debt_gdp = round(debt_gdp, digits = 2)) %>%
+filter(debt_gdp != "no data")
+
+#old popualtion
+
+old_population <- read_csv("raw-data/old_population.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(old_pop_percent = value)
+
+#gdp per capita
+
+gdp_per_capita <- read_csv("raw-data/gdp_per_capita.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp_per_capita = value)
+
+gdp_per_capita_ea <- gdp_per_capita %>%
+  mutate(euro_area = ifelse(country %in% c("Germany", "Spain", "France", "Italy", "Netherlands", "Austria", "Belgium", "Cyprus", "Estonia", "Finland", "Greece", "Ireland", "Latvia", "Lithuania", "Luxembourg", "Malta", "Portugal", "Slovakia", "Slovenia"), 1, 0)) %>%
+  filter(euro_area == 1) %>%
+  group_by(year) %>%
+  summarize(gdp_per_capita = mean(gdp_per_capita)) %>%
+  mutate(country = "Euro Area") %>%
+  mutate(country_code = "EMU")
+  
+gdp_per_capita_final <- gdp_per_capita_ea %>%
+  full_join(gdp_per_capita, by = c("country", "country_code", "year", "gdp_per_capita"))
+
+final_final_data_regression_1 <- read_csv("raw-data/final_regression_1_data_2_17.csv") %>%
+full_join(debt_gdp, by = c("country", "year")) %>%
+full_join(old_population, by = c("country", "country_code", "year")) %>%
+full_join(gdp_per_capita_final, by = c("country", "country_code", "year")) %>% arrange(country, year) %>%
+filter(cic != "NA") %>%
+select(country, country_code, year, cic, gdp, cd, deposit_interest_rate, treasury_bill_rate, gdp_per_capita, tax_gdp, crime, eci, uncertainty, debt_gdp, old_pop_percent, business_freedom, urban_pop_growth, urbanization, monetary_freedom, property_rights, shadow_economy, investment_freedom, financial_freedom, trade_freedom, government_integrity, judicial_effectiveness, overall_score, tax_burden, government_spending, fiscal_health, labor_freedom, region, development)
+
+write_csv(final_final_data_regression_1, "final_final_regression_1_data.csv")
+
+```
