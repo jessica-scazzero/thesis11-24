@@ -100,24 +100,32 @@ eci_final <- eci_ea %>%
 
 #uncertainty index
 
-uncertainty <- read_excel("raw-data/uncertainty.xlsx") %>%
+uncertainty_2 <- read_excel("raw-data/uncertainty.xlsx") %>%
 mutate(year = str_sub(year, 1,4)) %>%
-mutate_all(as.character) %>%
 mutate(year = as.numeric(year)) %>%
 pivot_longer(-year, names_to = "country_code", values_to = "uncertainty") %>%
-mutate(uncertainty = as.numeric(uncertainty)) %>%
 group_by(country_code, year) %>%
-summarize(uncertainty = mean(uncertainty, na.rm = TRUE))
+summarize(uncertainty = round(mean(uncertainty, na.rm = TRUE), digits = 4)) %>%
+mutate(uncertainty = as.numeric(uncertainty))
 
-uncertainty_ea <- uncertainty %>%
+#%>%
+#mutate(uncertainty = round(uncertainty, digits = 2)) %>%
+#filter(uncertainty != 0.00)
+
+#year = str_sub(year, 1,4),
+#
+#summarize(uncertainty = round(mean(uncertainty, na.rm = TRUE), digits = 2)) %>%
+#quarter = str_sub(year, 6)
+
+uncertainty_ea_2 <- uncertainty_2 %>%
   mutate(euro_area = ifelse(country_code %in% c("DEU", "ESP", "FRA", "ITA", "NLD", "IRL"), 1, 0)) %>%
   filter(euro_area == 1) %>%
   group_by(year) %>%
   summarize(uncertainty = mean(uncertainty)) %>%
   mutate(country_code = "EMU")
 
-uncertainty_final <- uncertainty_ea %>%
-  full_join(uncertainty, by = c("country_code", "year", "uncertainty"))
+uncertainty_final_2 <- uncertainty_ea_2 %>%
+  full_join(uncertainty_2, by = c("country_code", "year", "uncertainty"))
 
 #tax to gdp
 
@@ -245,7 +253,7 @@ final_regression_1_data <- cash_demand %>%
   full_join(treasury_bill_rate, by = c("country", "year")) %>%
   full_join(tax_gdp_final, by = c("country", "country_code", "year")) %>%
   full_join(eci_final, by = c("country", "year")) %>%
-  full_join(uncertainty_final, by = c("country_code", "year")) %>%
+  full_join(uncertainty_final_2, by = c("country_code", "year")) %>%
   full_join(economic_freedom_final, by = c("country", "year")) %>%
   full_join(shadow_economy_final, by = c("country", "year")) %>%
   full_join(urbanization_final, by = c("country", "country_code", "year")) %>%
@@ -333,7 +341,8 @@ rename(debt_gdp = value) %>%
 mutate(debt_gdp = as.numeric(debt_gdp)) %>%
 mutate(year = as.numeric(year)) %>%
 mutate(debt_gdp = round(debt_gdp, digits = 2)) %>%
-filter(debt_gdp != "no data")
+filter(debt_gdp != "no data") %>%
+arrange(country, year)
 
 #old popualtion
 
@@ -368,13 +377,114 @@ gdp_per_capita_ea <- gdp_per_capita %>%
 gdp_per_capita_final <- gdp_per_capita_ea %>%
   full_join(gdp_per_capita, by = c("country", "country_code", "year", "gdp_per_capita"))
 
+#inflation 
+
+inflation_rate <- read_csv("raw-data/inflation_rate.csv", skip = 4) %>% select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(inflation_rate = value) %>%
+arrange(inflation_rate)
+
 final_final_data_regression_1 <- read_csv("raw-data/final_regression_1_data_2_17.csv") %>%
 full_join(debt_gdp, by = c("country", "year")) %>%
 full_join(old_population, by = c("country", "country_code", "year")) %>%
 full_join(gdp_per_capita_final, by = c("country", "country_code", "year")) %>% arrange(country, year) %>%
 filter(cic != "NA") %>%
-select(country, country_code, year, cic, gdp, cd, deposit_interest_rate, treasury_bill_rate, gdp_per_capita, tax_gdp, crime, eci, uncertainty, debt_gdp, old_pop_percent, business_freedom, urban_pop_growth, urbanization, monetary_freedom, property_rights, shadow_economy, investment_freedom, financial_freedom, trade_freedom, government_integrity, judicial_effectiveness, overall_score, tax_burden, government_spending, fiscal_health, labor_freedom, region, development)
+select(country, country_code, year, cic, gdp, cd, deposit_interest_rate, treasury_bill_rate, gdp_per_capita, tax_gdp, crime, eci, uncertainty, debt_gdp, old_pop_percent, business_freedom, urban_pop_growth, urbanization, monetary_freedom, property_rights, shadow_economy, investment_freedom, financial_freedom, trade_freedom, government_integrity, judicial_effectiveness, overall_score, tax_burden, government_spending, fiscal_health, labor_freedom, region, development) %>%
+left_join(inflation_rate, by = c("country", "country_code", "year")) %>%
+left_join(gdp_per_capita_ppp, by = c("country", "country_code", "year"))
 
 write_csv(final_final_data_regression_1, "final_final_regression_1_data.csv")
 
+updated_uncertainty_data <- final_regression_1_data %>%
+full_join(debt_gdp, by = c("country", "year")) %>%
+full_join(old_population, by = c("country", "country_code", "year")) %>%
+full_join(gdp_per_capita_final, by = c("country", "country_code", "year")) %>% arrange(country, year) %>%
+filter(cic != "NA") %>%
+select(country, country_code, year, cic, gdp, cd, deposit_interest_rate, treasury_bill_rate, gdp_per_capita, tax_gdp, crime, eci, uncertainty, debt_gdp, old_pop_percent, business_freedom, urban_pop_growth, urbanization, monetary_freedom, property_rights, shadow_economy, investment_freedom, financial_freedom, trade_freedom, government_integrity, judicial_effectiveness, overall_score, tax_burden, government_spending, fiscal_health, labor_freedom, region, development) %>%
+left_join(gdp_per_capita_ppp, by = c("country", "country_code", "year"))
+  
+write_csv(updated_uncertainty_data, "updated_uncertainty_data.csv")
+
+testing <- final_final_data_regression_1 %>%
+filter(development %in% c("High-Income Economies", "Upper-Middle-Income Economies")) %>%
+arrange(desc(gdp_per_capita)) 
+
+gdp_per_capita_ppp <- read_csv("raw-data/gdp_per_capita_ppp.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp_per_capita_ppp = value)
+
+business_freedom_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_business_freedom = mean(business_freedom, na.rm = TRUE)) %>%
+filter(year != "2018")
+
+ggplot(business_freedom_graph, aes(x=year, y=avg_business_freedom, color = development)) + geom_line()
+
+urbanization_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_urbanization = mean(urbanization, na.rm = TRUE))
+filter(development == "High-Income Economies") %>%
+group_by(region, year)%>%
+summarize(avg_urbanization = mean(urbanization, na.rm = TRUE))
+
+ggplot(urbanization_graph, aes(x=year, y=avg_urbanization, color = development)) + geom_line()
+
+tax_gdp_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_tax_gdp = mean(tax_gdp, na.rm = TRUE)) %>%
+filter(year != "2018")
+
+ggplot(tax_gdp_graph, aes(x=year, y=avg_tax_gdp, color = development)) + geom_line()
+
+old_pop_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_old_pop = mean(old_pop_percent, na.rm = TRUE)) %>%
+filter(year != "2018")
+
+ggplot(old_pop_graph, aes(x=year, y=avg_old_pop, color = development)) + geom_line()
+
+gdp_per_capita_ppp <- read_csv("raw-data/gdp_per_capita_ppp.csv", skip = 4) %>%
+select(-`Indicator Name`, -`Indicator Code`) %>%
+gather(year, value, -c(`Country Name`, `Country Code`)) %>%
+filter(value != "NA") %>%
+rename(country = `Country Name`) %>%
+rename(country_code = `Country Code`) %>%
+mutate(year = as.numeric(year)) %>%
+rename(gdp_per_capita_ppp = value) 
+
+gdp_per_capita_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_gdp_per_capita = mean(gdp_per_capita_ppp, na.rm = TRUE)) 
+
+ggplot(gdp_per_capita_graph, aes(x=year, y=avg_gdp_per_capita, color = development)) + geom_line()
+
+monetary_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_monetary_freedom = mean(monetary_freedom, na.rm = TRUE)) 
+
+ggplot(monetary_graph, aes(x=year, y=avg_monetary_freedom, color = development)) + geom_line()
+
+urban_pop_growth_graph <- final_final_data_regression_1 %>%
+filter(!country %in% c("Zimbabwe", "Liberia", "Angola", "Botswana", "Belarus", "Namibia", "Panama", "Qatar", "Eswatini", "Congo DR", "Zambia", "Jordan", "Turkey", "Azerbaijan", "Nigeria", "Kuwait", "Venezuela, RB", "Guinea-Bissau", "Kazakhstan")) %>%
+group_by(development, year) %>%
+summarize(avg_urb_pop_growth = mean(urban_pop_growth, na.rm = TRUE)) 
+
+ggplot(urban_pop_growth_graph, aes(x=year, y=avg_urb_pop_growth, color = development)) + geom_line()
+
+  
 ```

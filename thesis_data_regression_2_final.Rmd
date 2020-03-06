@@ -27,7 +27,14 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```{r cars}
 
-data_2 <- read_csv("raw-data/time_series_data_final_2.csv") 
+data_2 <- read_csv("raw-data/time_series_data_final_2.csv") %>%
+filter(country != "Nigeria") %>%
+filter(country != "New Zealand") %>%
+filter(country != "Germany")
+
+time_series_graph <- ggplot(data_2, aes(x=year, y=cd, color = country)) + geom_line(size =1.5) + labs(title = "Long Time Series of Cash Demand", subtitle = "Reversal of the Long Period of Decline in the 1990s", y = "Cash Demand (CiC / GDP)", x = "Year", color = "Country", caption = "RBA; OeNB; BoC; ECB; HKMA; RBI; BOJ; BdeM; SNB; BoE; FRED; World Bank") 
+
+ggsave("time_series_graph.png", time_series_graph, width = 12, height = 7)
 
 deposit_interest_rate <- read_csv("raw-data/interest_rates_wdi.csv", skip = 4) %>%
 select(-`Indicator Name`, -`Indicator Code`) %>%
@@ -49,17 +56,24 @@ group_by(country)
 
 ggplot(longest_time_series_final, aes(x=year, y=cd_100, color = country)) + geom_line()
 
+
 ggplot(longest_time_series_final, aes(x=year, y=treasury_bill_rate, color = country)) + geom_line()
 
 regression_2_data_final_final <- read_csv("raw-data/regression_2_data_final_final.csv") %>%
+mutate(year = as.numeric(year)) %>%
 left_join(central_bank_rate, by = c("country", "year")) %>%
 left_join(urbanization, by = c("country", "country_code", "year")) %>%
+left_join(urban_pop_growth, by = c("country", "country_code", "year")) %>%  
 left_join(gdp_per_capita, by = c("country", "country_code", "year")) %>%
 left_join(debt_gdp, by = c("country", "year")) %>%
 left_join(tax_gdp, by = c("country", "country_code", "year")) %>%
-left_join(oecd_tax_revenue, by = c("country_code", "year")) %>% left_join(old_population,  by = c("country", "country_code", "year")) 
+left_join(oecd_tax_revenue, by = c("country_code", "year")) %>%
+left_join(deposit_interest_rate, by = c("country", "country_code", "year")) %>%
+left_join(treasury_bill_rate, by = c("country", "year")) %>%
+left_join(old_population, by = c("country", "country_code", "year")) %>%
+left_join(historical_uncertainty, by = c("country_code", "year"))
 
-write_csv(regression_2_data_final_final, "regression_2_data_final.csv")
+write_csv(regression_2_data_final_final, "regression_2_data_final_final.csv")
   
 oecd_tax_revenue <- read_csv("raw-data/DP_LIVE_22022020031430253.csv") %>%
   select(`LOCATION`, `TIME`, `Value`) %>%
@@ -69,6 +83,48 @@ oecd_tax_revenue <- read_csv("raw-data/DP_LIVE_22022020031430253.csv") %>%
   rename(oecd_tax_revenue = `Value`)
   
 
+historical_uncertainty <- read_excel("raw-data/uncertainty.xlsx") %>%
+mutate(year = str_sub(year, 1,4)) %>%
+mutate(year = as.numeric(year)) %>%
+pivot_longer(-year, names_to = "country_code", values_to = "uncertainty") %>%
+group_by(country_code, year) %>%
+summarize(uncertainty = round(mean(uncertainty, na.rm = TRUE), digits = 4)) %>%
+mutate(uncertainty = as.numeric(uncertainty))
+
+
+historical_uncertainty_graph <- regression_2_data_final_final %>%
+filter(country %in% c("United States", "Canada", "Australia", "Mexico", "United Kingdom", "New Zealand", "Japan", "Switzerland")) %>%
+group_by(country) 
+
+ggplot(historical_uncertainty_graph, aes(x = year, y = uncertainty, color = country)) + geom_line()
+
+oecd_tax_revenue_graph <-regression_2_data_final_final %>%
+filter(country %in% c("United States", "Canada", "Australia", "Mexico", "United Kingdom", "New Zealand", "Japan", "Switzerland")) %>%
+group_by(country) %>%
+filter(year != "2018")
+
+ggplot(oecd_tax_revenue_graph, aes(x = year, y = tax_gdp, color = country)) + geom_line()
+
+historical_old_pop_graph <- regression_2_data_final_final %>%
+filter(country %in% c("United States", "Canada", "Australia", "Mexico", "United Kingdom", "New Zealand", "Japan", "Switzerland")) %>%
+group_by(country) %>%
+filter(year != "2018")
+
+ggplot(historical_old_pop_graph, aes(x = year, y = old_pop_percent, color = country)) + geom_line()
+
+historical_urbanization_graph <- regression_2_data_final_final %>%
+filter(country %in% c("United States", "Canada", "Australia", "Mexico", "United Kingdom", "New Zealand", "Japan", "Switzerland")) %>%
+group_by(country) %>%
+filter(year != "2018")
+
+ggplot(historical_urbanization_graph, aes(x = year, y = urbanization, color = country)) + geom_line()
+
+historical_interest_rate_graph <- regression_2_data_final_final %>%
+filter(country %in% c("United States", "Canada", "Australia", "Mexico", "United Kingdom", "New Zealand", "Japan", "Switzerland")) %>%
+group_by(country) %>%
+filter(year != "2018")
+
+ggplot(historical_interest_rate_graph, aes(x = year, y = avg_central_bank_rate, color = country)) + geom_line()
 
 ```
 

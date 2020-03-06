@@ -159,9 +159,6 @@ rename(interest_rates_wdi = value)
 ```
 
 
-
-
-
 ```{r updated}
 ifs_updated <- read_xlsx("raw-data/international_financial_statistics_ updated.xlsx") %>%
   gather(year, value, -c(country)) %>%
@@ -191,17 +188,17 @@ cash_region <- cash %>%
           ifelse(country %in% c("Albania", "Armenia", "Azerbaijan", "Belarus", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Georgia", "Hungary", "Iceland", "Kazakhstan", "Kyrgyz Republic", "Moldova", "North Macedonia", "Norway", "Poland", "Romania", "Serbia", "Sweden", "Switzerland", "Tajikistan", "Turkey", "Ukraine", "United Kingdom"), "Europe and Central Asia", 
            ifelse(country %in% c("Antigua and Barbuda", "Argentina", "Bahamas", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Grenada", "Guatemala", "Guyana", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama", "Paraguay", "Peru", "St. Kitts and Nevis", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Trinidad and Tobago", "Uruguay", "Venezuela, RB"), "Latin America and The Caribbean",
             ifelse(country %in% c("Algeria", "Djibouti", "Egypt", "Iraq", "Israel", "Jordan", "Kuwait", "Morocco", "Oman", "Qatar", "Syrian Arab Republic", "Tunisia", "United Arab Emirates"), "Middle East and North Africa", 
-             ifelse(country %in% c("Canada", "United States"), "North America",
+             ifelse(country %in% c("Canada", "United States", "Mexico"), "North America",
               ifelse(country %in% c("Afghanistan", "Bangladesh", "Bhutan", "India", "Maldives", "Nepal", "Pakistan", "Sri Lanka"), "South Asia",
                ifelse(country %in% c("Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo DR", "Congo, Rep.", "Cote d'Ivoire", "Equatorial Guinea", "Eritrea", "Eswatini", "Gabon", "Ghana", "Guinea-Bissau", "Kenya", "Lesotho", "Liberia", "Madagascar", "Mali", "Mauritania", "Mauritius", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Uganda", "Zambia", "Zimbabwe"), "Sub-Saharan Africa", "NA")))))))) %>%
  filter(country != "Liberia") %>%
    filter(country != "Jordan")
 
 cash_development <- cash %>%
-  mutate(development = ifelse(country %in% c("Afghanistan", "Benin", "Burkina Faso", "Burundi", "Central African Republic", "Chad", "Congo DR", "Eritrea", "Guinea-Bissau", "Haiti", "Liberia", "Madagascar", "Mali", "Mozambique", "Nepal", "Niger", "Rwanda", "Sierra Leone", "South Sudan", "Syrian Arab Republic", "Tajikistan", "Tanzania", "Togo", "Uganda"), "Low-Income Economies",
-                        ifelse(country %in% c("Angola", "Bangladesh", "Bhutan", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Comoros", "Congo, Rep.", "Cote d'Ivoire", "Djibouti", "Egypt", "Eswatini", "Ghana", "Honduras", "India", "Indonesia", "Kenya", "Kyrgyz Republic", "Lesotho", "Mauritania", "Moldova", "Mongolia", "Morocco", "Myanmar", "Nicaragua", "Nigeria", "Pakistan", "Papua New Guinea", "Philippines", "Sao Tome and Principe", "Senegal", "Solomon Islands", "Sudan", "Tunisia", "Ukraine", "Vanuatu", "Zambia", "Zimbabwe"), "Lower-Middle-Income Economies", 
-                        ifelse(country %in% c("Albania", "Algeria", "Argentina", "Armenia", "Azerbaijan", "Belarus", "Belize", "Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Equatorial Guinea", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Malaysia", "Maldives", "Mauritius", "Mexico", "Namibia", "North Macedonia", "Paraguay", "Peru", "Romania", "Samoa", "Serbia", "Sri Lanka", "South Africa", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Thailand", "Tonga", "Turkey", "Venezuela, RB"), "Upper-Middle-Income Economies",
-                        ifelse(country %in% c("Antigua and Barbuda", "Australia", "Bahamas", "Barbados", "Brunei Darussalam", "Canada", "Chile", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Hong Kong", "Hungary", "Iceland", "Israel", "Japan", "Korea, Rep.", "Kuwait", "Macao", "New Zealand", "Norway", "Oman", "Panama", "Poland", "Qatar", "Seychelles", "Singapore", "St. Kitts and Nevis", "Sweden", "Switzerland", "Trinidad and Tobago", "United Arab Emirates", "United Kingdom", "United States", "Uruguay"), "High-Income Economies", "NA"))))) %>%
+  mutate(development = ifelse(country %in% c("Afghanistan", "Benin", "Burkina Faso", "Burundi", "Central African Republic", "Chad", "Congo DR", "Eritrea", "Guinea-Bissau", "Haiti", "Liberia", "Madagascar", "Mali", "Mozambique", "Nepal", "Niger", "Rwanda", "Sierra Leone", "South Sudan", "Syrian Arab Republic", "Tajikistan", "Tanzania", "Togo", "Uganda"), "Low-Income",
+                        ifelse(country %in% c("Angola", "Bangladesh", "Bhutan", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Comoros", "Congo, Rep.", "Cote d'Ivoire", "Djibouti", "Egypt", "Eswatini", "Ghana", "Honduras", "India", "Indonesia", "Kenya", "Kyrgyz Republic", "Lesotho", "Mauritania", "Moldova", "Mongolia", "Morocco", "Myanmar", "Nicaragua", "Nigeria", "Pakistan", "Papua New Guinea", "Philippines", "Sao Tome and Principe", "Senegal", "Solomon Islands", "Sudan", "Tunisia", "Ukraine", "Vanuatu", "Zambia", "Zimbabwe"), "Lower-Middle Income", 
+                        ifelse(country %in% c("Albania", "Algeria", "Argentina", "Armenia", "Azerbaijan", "Belarus", "Belize", "Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "Colombia", "Costa Rica", "Dominica", "Dominican Republic", "Equatorial Guinea", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Malaysia", "Maldives", "Mauritius", "Mexico", "Namibia", "North Macedonia", "Paraguay", "Peru", "Romania", "Samoa", "Serbia", "Sri Lanka", "South Africa", "St. Lucia", "St. Vincent and the Grenadines", "Suriname", "Thailand", "Tonga", "Turkey", "Venezuela, RB"), "Upper-Middle Income",
+                        ifelse(country %in% c("Antigua and Barbuda", "Australia", "Bahamas", "Barbados", "Brunei Darussalam", "Canada", "Chile", "Croatia", "Czech Republic", "Denmark", "Euro Area", "Hong Kong", "Hungary", "Iceland", "Israel", "Japan", "Korea, Rep.", "Kuwait", "Macao", "New Zealand", "Norway", "Oman", "Panama", "Poland", "Qatar", "Seychelles", "Singapore", "St. Kitts and Nevis", "Sweden", "Switzerland", "Trinidad and Tobago", "United Arab Emirates", "United Kingdom", "United States", "Uruguay"), "High-Income", "NA"))))) %>%
   filter(country != "Liberia") %>%
   filter(country != "Jordan")
 
@@ -257,7 +254,7 @@ world_cd <- cash %>%
   summarize(avg = mean(cd)) %>%
   filter(!year %in% c("1997", "1998", "1999", "2000"))
 
-aggregate_cd <- ggplot(world_cd, aes(x=year, y=avg)) + geom_point() + geom_line(size = 1.25) + labs(title = "Change in Aggregate World Currency Demand 2001-2018", subtitle = "Significant Positive Trend", x= "Year", y = "Average Currency Demand", caption = "Source: IMF - International Financial Statistics; BoE; SNB; RBI; BCRA; MAS") 
+aggregate_cd <- ggplot(world_cd, aes(x=year, y=avg)) + geom_point() + geom_line(size = 1.25) + labs(title = "Change in Aggregate World Currency Demand 2001-2018", subtitle = "Significant Positive Trend", x= "Year", y = "Average Currency Demand", caption = "Source: IMF; BoE; SNB; RBI; BCRA") 
 print(aggregate_cd)
 
 world_2014 <- cash %>%
@@ -279,9 +276,14 @@ difference <- world_2015 %>%
 
 region_cd <- cash_region %>%
   group_by(region, year) %>%
-  summarize(avg = mean(cd)) 
+  summarize(avg = mean(cd)) %>%
+  mutate(avg = avg*100)
 
-ggplot(region_cd, aes(x=year, y=avg, color = region)) + geom_point() + geom_line() + labs(title = "Change in Aggregate World Currency Demand Over Time by Region", subtitle = "Remarkedly similar trends across regions", x= "Year", y = "Average Currency Demand", color = "World Bank Region Classification", caption = "Source: IMF - International Financial Statistics; BoE; SNB; RBI; BCRA; MAS")
+region_graph <- ggplot(region_cd, aes(x=year, y=avg, color = region)) + geom_point() + geom_line() + labs(title = "Change in Aggregate Cash Demand by Region", subtitle = "2001 - 2018", x= "Year", y = "Average Currency Demand", color = "World Bank Regions", caption = "Source: IMF; BoE; SNB; RBI; BCRA")
+
+#Remarkedly similar trends across regions
+#Significant positive trend
+
 
 europe <- cash_region %>%
   filter(region == "Europe and Central Asia") %>%
@@ -292,9 +294,15 @@ europe <- cash_region %>%
 
 development_cd <- cash_development %>%
   group_by(development, year) %>%
-  summarize(avg = mean(cd)) 
+  summarize(avg = mean(cd)) %>%
+  mutate(avg = avg*100)
 
-ggplot(development_cd, aes(x=year, y=avg, color = development)) + geom_point() + geom_line() + labs(title = "Change in Aggregate World Currency Demand Over Time by Development Level", subtitle = "Significant Positive Trend", x= "Year", y = "Average Currency Demand", color = "World Bank Development Level", caption = "Source: IMF - International Financial Statistics; BoE; SNB; RBI; BCRA; MAS")
+development_graph <- ggplot(development_cd, aes(x=year, y=avg, color = development)) + geom_point() + geom_line() + labs(title = "Change in Aggregate Cash Demand by Development", subtitle = "2001 - 2018", x= "Year", y = "Average Currency Demand", color = "World Bank Development", caption = "Source: IMF; BoE; SNB; RBI; BCRA")
+
+ggsave("graphs.jpg", arrangeGrob(region_graph, development_graph, ncol = 2))
+
+p <- plot_grid(region_graph, development_graph)
+save_plot("plot2.jpg", p, ncol = 2)
 
 #East Asia
 east_asia_cd <- cash_region %>%
@@ -319,10 +327,12 @@ east_asia_2018 <- cash_region %>%
 
 east_asia_cd_pc <- east_asia_2001 %>%
   left_join(east_asia_2018, by = "country") %>%
-  mutate(difference = (`2018` - `2001`/`2001`) * 100) %>%
-  arrange(desc(difference))
+  mutate(country = ifelse(country == "Papua New Guinea", "Papua N. Guinea", country)) %>%
+  mutate(difference = ((`2018` - `2001`)/`2001`) * 100) %>%
+  arrange(desc(difference)) %>%
+  filter(country != "Brunei Darussalam")
 
-ggplot(east_asia_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in South Asia and Pacific 2001 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country") 
+east_asia_cd_pc_graph <- ggplot(east_asia_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Cash Demand", subtitle = "East Asia and Pacific 2001 - 2018", caption = "Source: IMF - International Financial Statistics", y = "Percent Change", x = "Country") 
 
 + scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10))
 
@@ -350,9 +360,16 @@ europe_2018 <- cash_region %>%
 europe_cd_pc <- europe_2002 %>%
   left_join(europe_2018, by = "country") %>%
   mutate(difference = ((`2018` - `2002`)/`2002`) * 100) %>%
-  arrange(desc(difference))
+  arrange(desc(difference)) %>%
+  filter(country != "Kazakhstan") %>%
+  filter(country != "Azerbaijan") %>%
+  mutate(country = ifelse(country == "Kyrgyz Republic", "Kyrgyz Rep.",
+                   ifelse(country == "Czech Republic", "Czech Rep",
+                   ifelse(country == "North Macedonia", "N. Macedonia",
+                   ifelse(country == "Bosnia and Herzegovina", "Bosnia", 
+                   ifelse(country == "United Kingdom", "UK", country))))))
 
-ggplot(europe_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in Europe and Central Asia 2002 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country") 
+europe_cd_pc_graph <- ggplot(europe_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Cash Demand", subtitle = "Europe and Central Asia 2002 - 2018", caption = "Source: IMF - International Financial Statistics; BoE; SNB", y = "Percent Change", x = "Country") 
 
 #percent change Latin America and The Caribbean by country 
 
@@ -373,11 +390,20 @@ la_2018 <- cash_region %>%
 
 la_cd_pc <- la_2001 %>%
   right_join(la_2018, by = "country") %>%
-  mutate(difference = (`2018` - `2001`/`2001`) * 100) %>%
+  mutate(difference = ((`2018` - `2001`)/`2001`) * 100) %>%
   arrange(desc(difference)) %>%
-  filter(country != "Peru")
+  filter(country != "Peru") %>%
+  filter(country != "Panama") %>%
+  mutate(country = ifelse(country == "St. Kitts and Nevis", "St. Kitts",
+                    ifelse(country == "Trinidad and Tobago", "TT",
+                     ifelse(country == "Antigua and Barbuda", "Antigua",
+                     ifelse(country == "St. Vincent and the Grenadines", "St. Vincent", 
+                     ifelse(country == "Dominican Republic", "DR", country))))))
+                        
 
-ggplot(la_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in Latin America and The Caribbean 2001 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country") + scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20)) 
+la_cd_pc_graph <- ggplot(la_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Cash Demand", subtitle = "Latin America & The Caribbean 2001 - 2018", caption = "Source: IMF - International Financial Statistics; BCRA", y = "Percent Change", x = "Country") 
+
++ scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20)) 
 
 #scale_fill_gradient2(low = "lightblue", high = "darkblue", midpoint = 0, space = "Lab", guide = "colorbar", aesthetics = "fill")
 
@@ -400,11 +426,14 @@ me_2018 <- cash_region %>%
 
 me_cd_pc <- me_2002 %>%
   right_join(me_2018, by = "country") %>%
-  mutate(difference = (`2018` - `2002`/`2002`) * 100) %>%
+  mutate(difference = ((`2018` - `2002`)/`2002`) * 100) %>%
+  mutate(country = ifelse(country == "United Arab Emirates", "UAE", country)) %>%
   arrange(desc(difference)) %>%
-  filter(!country %in% c("Jordan", "Iraq"))
+  filter(!country %in% c("Jordan", "Iraq", "Qatar", "Kuwait"))
 
-ggplot(me_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in Middle East and North Africa 2002 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country") + scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20)) 
+me_cd_pc_graph <- ggplot(me_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Cash Demand", subtitle = "Middle East and North Africa 2002 - 2018", y = "Percent Change", x = "Country", caption = "Source: IMF - International Financial Statistics") 
+
++ scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20)) 
 
 #percent change Sub-Saharan Africa by country 
 
@@ -428,9 +457,14 @@ ssa_cd_pc <- ssa_2001 %>%
   right_join(ssa_2018, by = "country") %>%
   mutate(difference = ((`2018` - `2001`)/`2001`) * 100) %>%
   arrange(desc(difference)) %>%
-  filter(!country %in% c("Zimbabwe", "Madagascar", "Liberia"))
+  filter(!country %in% c("Zimbabwe", "Madagascar", "Liberia", "Angola", "Botswana", "Zambia", "Tanzania", "Rwanda", "Eswatini", "Seychelles")) %>%
+  mutate(country = ifelse(country == "Central African Republic", "CAR",
+                   ifelse(country == "Sao Tome and Principe", "STP",
+                   ifelse(country == "Equatorial Guinea", "GNQ", country))))
 
-ggplot(ssa_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in Sub-Saharan Africa 2001 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country") + scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20)) 
+ssa_cd_pc_graph <- ggplot(ssa_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Cash Demand", subtitle = "Sub-Saharan Africa 2001 - 2018", y = "Percent Change", x = "Country", caption = "Source: IMF - International Financial Statistics") 
+
++ scale_y_continuous(breaks = c(-5, -2.5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20)) 
 
 
 original_cd <- original %>%
@@ -460,13 +494,42 @@ na_2018 <- cash_region %>%
 
 na_cd_pc <- na_2001 %>%
   right_join(na_2018, by = "country") %>%
-  mutate(difference = (`2018` - `2001`)/`2001` * 100) %>%
+  mutate(difference = ((`2018` - `2001`)/`2001`) * 100) %>%
   arrange(desc(difference))
 
-ggplot(na_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in North America 2001 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country") 
+na_cd_pc_graph <- ggplot(na_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Currency Demand in North America 2001 - 2018", subtitle = "Significant Increases in the Majority of Countries", y = "Percent Change", x = "Country", caption = "Source: IMF - International Financial Statistics") 
 
 check_number <- check_number %>%
   arrange(desc(n))
+
+#south asia
+
+sa_cd <- cash_region %>%
+  filter(region == "South Asia")
+
+sa_2001 <- cash_region %>%
+  filter(region == "South Asia") %>%
+  filter(year == "2001") %>%
+  group_by(country) %>%
+  summarize("2001" = cd)
+
+sa_2018 <- cash_region %>%
+  filter(region == "South Asia") %>%
+  filter(year == "2018") %>%
+  group_by(country) %>%
+  summarize("2018" = cd)
+
+sa_cd_pc <- sa_2001 %>%
+  right_join(sa_2018, by = "country") %>%
+  mutate(difference = ((`2018` - `2001`)/`2001`) * 100) %>%
+  arrange(desc(difference)) %>%
+  filter(country != "Afghanistan")
+
+sa_cd_pc_graph <- ggplot(sa_cd_pc, aes(x = reorder(country, difference), y = difference, fill =  reorder(country, -difference))) + geom_col() + coord_flip() + theme(legend.position = "none") + labs(title = "Percent Change in Cash Demand", subtitle = "South Asia 2001 - 2018", y = "Percent Change", x = "Country", caption = "Source: IMF - International Financial Statistics; RBI") 
+
+g <- plot_grid(east_asia_cd_pc_graph, europe_cd_pc_graph, la_cd_pc_graph, me_cd_pc_graph, sa_cd_pc_graph, ssa_cd_pc_graph, labels = "AUTO", nrow = 3)
+save_plot("percent_change.jpg", g, nrow = 3)
+
 
 ```
 
